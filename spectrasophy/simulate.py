@@ -44,6 +44,7 @@ except ImportError:
 import multiprocessing
 import traceback
 
+import spectrasophy
 from spectrasophy import utility
 
 FSC2_CONFIG_TEMPLATE = """\
@@ -787,8 +788,13 @@ class SpectrasophySimulator(object):
             config_d,
             num_processes=None,
             logging_frequency=1000,
+            package_id=None,
             is_verbose_setup=True):
         # configure
+        if package_id is None:
+            self.package_id = spectrasophy.package_id()
+        else:
+            self.package_id = package_id
         self.elapsed_time = 0.0 # need to be here for logging
         config_d = dict(config_d) # make copy so we can pop items
         self.is_verbose_setup = is_verbose_setup
@@ -833,6 +839,7 @@ class SpectrasophySimulator(object):
         self.run_logger.system = self
         self.logging_frequency = config_d.pop("logging_frequency", 1000)
         if self.is_verbose_setup:
+            self.run_logger.info("Running: {}".format(self.package_id))
             self.run_logger.info("Configuring simulation '{}'".format(self.title))
         self.fsc2_path = config_d.pop("fsc2_path", "fsc25")
         if self.is_verbose_setup:

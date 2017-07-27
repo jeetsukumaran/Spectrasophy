@@ -29,3 +29,89 @@
 ##
 ##############################################################################
 
+import subprocess
+import os
+import sys
+import site
+
+###############################################################################
+## PACKAGE METADATA
+import collections
+version_info = collections.namedtuple("dendropy_version_info",
+        ["major", "minor", "micro", "releaselevel"])(
+                major=1,
+                minor=0,
+                micro=0,
+                releaselevel=""
+                )
+__project__ = "Spectrasophy"
+__version__ = ".".join(str(s) for s in version_info[:4] if s != "")
+__author__ = "Jeet Sukumaran"
+__copyright__ = "Copyright 2017 Jeet Sukumaran"
+
+# Return the git revision as a string
+# Modified from: NumPy
+def git_revision_sha1():
+    try:
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip().decode("ascii")
+    except:
+        return None
+
+def git_revision_date():
+    try:
+        return subprocess.check_output('git log -1 --pretty=format:%ci'.split()).strip().decode("ascii")
+    except:
+        return None
+
+def revision_description():
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    try:
+        desc = subprocess.check_output(["git", "log", "-1", "--pretty=format:%h, %ci"], cwd=cwd).strip().decode("ascii")[:-6]
+    except:
+        return ""
+    if desc:
+        git_date = git_revision_date()
+        revision_text = " (revision: {})".format(desc)
+    else:
+        revision_text = ""
+    return revision_text
+
+def package_id():
+    return "{} {}{}".format(__project__, __version__, revision_description())
+
+def homedir():
+    import os
+    try:
+        try:
+            __homedir__ = __path__[0]
+        except AttributeError:
+            __homedir__ = os.path.dirname(os.path.abspath(__file__))
+        except IndexError:
+            __homedir__ = os.path.dirname(os.path.abspath(__file__))
+    except OSError:
+        __homedir__ = None
+    except:
+        __homedir__ = None
+    return __homedir__
+
+def description(dest=None):
+    if dest is None:
+        dest = sys.stdout
+    fields = collections.OrderedDict()
+    fields["Spectrasophy version"] = package_id()
+    fields["Spectrasophy location"] = homedir()
+    fields["Python version"] = sys.version.replace("\n", "")
+    fields["Python executable"] = sys.executable
+    try:
+        fields["Python site packages"] = site.getsitepackages()
+    except:
+        pass
+    max_fieldname_len = max(len(fieldname) for fieldname in fields)
+    for fieldname, fieldvalue in fields.items():
+        dest.write("{fieldname:{fieldnamewidth}}: {fieldvalue}\n".format(
+            fieldname=fieldname,
+            fieldnamewidth=max_fieldname_len + 2,
+            fieldvalue=fieldvalue))
+
+if __name__ == "__main__":
+    description()

@@ -5,13 +5,15 @@ import sys
 import argparse
 import traceback
 import time
+import spectrasophy
 from spectrasophy import simulate
 from spectrasophy import utility
 
 def main():
-    parser = argparse.ArgumentParser(
-            description="SPECTRASOPHY Site Frequency Spectrum Simulator",
-            )
+    parser = argparse.ArgumentParser()
+    package_id = spectrasophy.package_id()
+    parser.add_argument("--version", action="version", version=package_id)
+
     simulator_options = parser.add_argument_group("Simulation Configuration")
     simulator_options.add_argument("configuration_filepath",
             metavar="CONFIGURATION-FILE",
@@ -150,7 +152,9 @@ def main():
         simulator = simulate.SpectrasophySimulator(
                 config_d=config_d,
                 num_processes=args.num_processes,
-                is_verbose_setup=True)
+                is_verbose_setup=True,
+                package_id=package_id,
+                )
         filepath = config_d["output_prefix"] + ".sumstats.tsv"
         dest = utility.open_destput_file_for_csv_writer(
                 filepath=filepath,
