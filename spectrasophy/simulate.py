@@ -394,9 +394,6 @@ class SpectrasophySimulationModel(object):
         fsc2_run_configurations = collections.OrderedDict()
         div_time_model_desc = [None for i in range(self.num_lineage_pairs)]
 
-        # thetas
-        theta = rng.gammavariate(*self.prior_theta)
-
         expected_lineage_pair_idxs = set([i for i in range(self.num_lineage_pairs)])
         # groups sorted by earliest occurring lineage pair index, to retain consistent div time coding
         for group_id, group in enumerate(sorted(groups, key=lambda group: min(lineage_pair_idx for lineage_pair_idx in group))):
@@ -408,48 +405,6 @@ class SpectrasophySimulationModel(object):
                 div_time_model_desc[lineage_pair_idx] = str(group_id+1) # divergence time model description
                 div_time = div_time_values[group_id]
                 params["param.divTime.{}".format(lineage_pair.label)] = div_time
-
-                ## population parameters --- separate N and mu parameterization
-                ## -- deme 0
-                # deme0_pop_size = rng.gammavariate(*self.prior_popsize)
-                # deme0_mu = rng.gammavariate(*self.prior_mutRate)
-                # deme0_theta = 4 * deme0_pop_size * deme_0_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_mu
-                # params["param.theta.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_theta
-                # ## -- deme 1
-                # if self.theta_constraints[1] == self.theta_constraints[0]:
-                #     deme1_pop_size = deme0_pop_size
-                #     deme1_mu = deme0_mu
-                #     deme1_theta = deme0_theta
-                # else:
-                #     deme1_pop_size = rng.gammavariate(*self.prior_popsize)
-                #     deme1_mu = rng.gammavariate(*self.prior_mutRate)
-                #     deme1_theta = 4 * deme1_pop_size * deme1_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_mu
-                # params["param.theta.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_theta
-                # ## -- ancestor deme 2
-                # if self.theta_constraints[2] == self.theta_constraints[0]:
-                #     deme2_pop_size = deme0_pop_size
-                #     deme2_mu = deme0_mu
-                #     deme2_theta = deme0_theta
-                # elif self.theta_constraints[2] == self.theta_constraints[1]:
-                #     deme2_pop_size = deme1_pop_size
-                #     deme2_mu = deme1_mu
-                #     deme2_theta = deme1_theta
-                # elif self.prior_ancestral_theta[0] != 0 and self.prior_ancestral_theta[1] != 0:
-                #     raise NotImplementedError
-                #     deme2_pop_size = rng.gammavariate(*self.prior_popsize)
-                #     deme2_mu = rng.gammavariate(*self.prior_mutRate)
-                #     deme2_theta = 4 * deme2_pop_size * deme2_mu
-                # else:
-                #     deme2_pop_size = rng.gammavariate(*self.prior_popsize)
-                #     deme2_mu = rng.gammavariate(*self.prior_mutRate)
-                #     deme2_theta = 4 * deme2_pop_size * deme2_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_mu
-                # params["param.theta.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_theta
 
                 ## population parameters --- theta parameterization
                 deme0_theta = rng.gammavariate(*self.prior_theta)
