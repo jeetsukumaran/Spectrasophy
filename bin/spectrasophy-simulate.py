@@ -93,11 +93,13 @@ def main():
             type=int,
             help="Frequency that background progress messages get written to the log (0: do not log informational messages).")
     run_options.add_argument("--file-logging-level",
-            default=None,
-            help="Message level threshold for file logs.")
+            default="none",
+            choices=["debug", "info", "warning", "error", "critical", "none", ],
+            help="Message level threshold for screen logs (default: %(default)s).")
     run_options.add_argument("--stderr-logging-level",
-            default=None,
-            help="Message level threshold for screen logs.")
+            default="info",
+            choices=["debug", "info", "warning", "error", "critical", "none", ],
+            help="Message level threshold for screen logs (default: %(default)s).")
     run_options.add_argument("--no-cleanup",
             action="store_true",
             default=False,

@@ -408,20 +408,22 @@ class RunLogger(object):
         self._log = logging.getLogger(self.name)
         self._log.setLevel(RunLogger.DEBUG_MESSAGING_LEVEL)
         self.handlers = []
-        if kwargs.get("log_to_stderr", True):
+        stderr_logging_level_req = kwargs.get("stderr_logging_level", RunLogger.INFO_MESSAGING_LEVEL)
+        if kwargs.get("log_to_stderr", True) and stderr_logging_level_req.upper() != "NONE":
             handler1 = logging.StreamHandler()
-            stderr_logging_level = self.get_logging_level(kwargs.get("stderr_logging_level", RunLogger.INFO_MESSAGING_LEVEL))
+            stderr_logging_level = self.get_logging_level(stderr_logging_level_req)
             handler1.setLevel(stderr_logging_level)
             handler1.setFormatter(self.get_default_formatter())
             self._log.addHandler(handler1)
             self.handlers.append(handler1)
-        if kwargs.get("log_to_file", True):
+        file_logging_level_req = kwargs.get("file_logging_level", RunLogger.INFO_MESSAGING_LEVEL)
+        if kwargs.get("log_to_file", True) and file_logging_level_req.upper() != "NONE":
             if "log_stream" in kwargs:
                 log_stream = kwargs.get("log_stream")
             else:
                 log_stream = open(kwargs.get("log_path", self.name + ".log"), "w")
             handler2 = logging.StreamHandler(log_stream)
-            file_logging_level = self.get_logging_level(kwargs.get("file_logging_level", RunLogger.DEBUG_MESSAGING_LEVEL))
+            file_logging_level = self.get_logging_level(kwargs.get(file_logging_level_req))
             handler2.setLevel(file_logging_level)
             handler2.setFormatter(self.get_default_formatter())
             self._log.addHandler(handler2)
