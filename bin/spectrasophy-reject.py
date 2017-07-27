@@ -111,6 +111,7 @@ class SpectrasophyRejector(object):
                     delimiter=self.field_delimiter,
                     quoting=csv.QUOTE_NONE)
             for row_idx, row in enumerate(reader):
+                assert len(row) == len(reader.fieldnames)
                 target_stat_values = []
                 target_other_values = []
                 for key_idx, key in enumerate(self.all_fieldnames): # keys must be read in same order!

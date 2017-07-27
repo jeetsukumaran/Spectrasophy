@@ -48,6 +48,7 @@ class SpectrasophyNormalizer(object):
         for row_idx, row in enumerate(reader):
             if self.logging_frequency and row_idx > 0 and row_idx % self.logging_frequency == 0:
                 self.run_logger.info("- Processing row {}".format(row_idx+1))
+            assert len(row) == len(reader.fieldnames)
             for field_idx, field_name in enumerate(row):
                 if field_name not in self.fields:
                     self.fields[field_name] = [None for idx in range(self.current_data_row_idx)]
