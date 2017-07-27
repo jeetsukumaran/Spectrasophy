@@ -43,7 +43,7 @@ class MpArchitectureTests(unittest.TestCase):
                     "numTauClasses": 0
                     },
                 "locus_info": [
-                    {'taxon_label': 'S1',
+                    {'sister_pair_label': 'S1',
                         'locus_label': 'LocusS1M1',
                         'ploidy_factor': 1,
                         'mutation_rate_factor': 1,
@@ -57,7 +57,7 @@ class MpArchitectureTests(unittest.TestCase):
                         'alignment_filepath': 'S1M1.fasta',
                         },
 
-                    {'taxon_label': 'S1',
+                    {'sister_pair_label': 'S1',
                         'locus_label': 'LocusS1M2',
                         'ploidy_factor': 1,
                         'mutation_rate_factor': 1,

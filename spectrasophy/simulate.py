@@ -193,8 +193,8 @@ class LocusDefinition(object):
 
 class LineagePair(object):
 
-    def __init__(self, taxon_label):
-        self.taxon_label = taxon_label
+    def __init__(self, sister_pair_label):
+        self.label = sister_pair_label
         self.locus_definitions = []
 
     def add_locus_definition(self, locus_d):
@@ -213,18 +213,18 @@ class SpectrasophySimulationModel(object):
         self.lineage_pairs = [] # list to maintain order for indexing during Dirichlet process partitioning
         self.lineage_pairs_loci_labels = {}
         for locus_d in locus_info:
-            taxon_label = locus_d.pop("taxon_label")
+            sister_pair_label = locus_d.pop("sister_pair_label")
             try:
-                lineage_pair = self.label_to_lineage_pair_map[taxon_label]
+                lineage_pair = self.label_to_lineage_pair_map[sister_pair_label]
             except KeyError:
                 lineage_pair = LineagePair(
-                        taxon_label=taxon_label)
-                self.label_to_lineage_pair_map[taxon_label] = lineage_pair
+                        sister_pair_label=sister_pair_label)
+                self.label_to_lineage_pair_map[sister_pair_label] = lineage_pair
                 self.lineage_pairs.append(lineage_pair)
                 self.lineage_pairs_loci_labels[lineage_pair] = set()
             locus_definition = lineage_pair.add_locus_definition(locus_d)
             if locus_definition.locus_label in self.lineage_pairs_loci_labels[lineage_pair]:
-                raise ValueError("Lineage pair '{}': locus with label '{}' has already been defined".format(lineage_pair.taxon_label, locus_definition.locus_label))
+                raise ValueError("Lineage pair '{}': locus with label '{}' has already been defined".format(lineage_pair.label, locus_definition.locus_label))
             self.lineage_pairs_loci_labels[lineage_pair].add(locus_definition.locus_label)
 
     def configure_params(self, params_d):
@@ -378,16 +378,16 @@ class SpectrasophySimulationModel(object):
                 ## divergence time
                 div_time_model_desc[lineage_pair_idx] = str(group_id+1) # divergence time model description
                 div_time = div_time_values[group_id]
-                params["param.divTime.{}".format(lineage_pair.taxon_label)] = div_time
+                params["param.divTime.{}".format(lineage_pair.label)] = div_time
 
                 ## population parameters --- separate N and mu parameterization
                 ## -- deme 0
                 # deme0_pop_size = rng.gammavariate(*self.prior_popsize)
                 # deme0_mu = rng.gammavariate(*self.prior_mutRate)
                 # deme0_theta = 4 * deme0_pop_size * deme_0_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.taxon_label, _DEME0_LABEL)] = deme0_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.taxon_label, _DEME0_LABEL)] = deme0_mu
-                # params["param.theta.{}.{}".format(lineage_pair.taxon_label, _DEME0_LABEL)] = deme0_theta
+                # params["param.popSize.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_pop_size
+                # params["param.mutRate.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_mu
+                # params["param.theta.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_theta
                 # ## -- deme 1
                 # if self.theta_constraints[1] == self.theta_constraints[0]:
                 #     deme1_pop_size = deme0_pop_size
@@ -397,9 +397,9 @@ class SpectrasophySimulationModel(object):
                 #     deme1_pop_size = rng.gammavariate(*self.prior_popsize)
                 #     deme1_mu = rng.gammavariate(*self.prior_mutRate)
                 #     deme1_theta = 4 * deme1_pop_size * deme1_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.taxon_label, _DEME1_LABEL)] = deme1_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.taxon_label, _DEME1_LABEL)] = deme1_mu
-                # params["param.theta.{}.{}".format(lineage_pair.taxon_label, _DEME1_LABEL)] = deme1_theta
+                # params["param.popSize.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_pop_size
+                # params["param.mutRate.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_mu
+                # params["param.theta.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_theta
                 # ## -- ancestor deme 2
                 # if self.theta_constraints[2] == self.theta_constraints[0]:
                 #     deme2_pop_size = deme0_pop_size
@@ -418,9 +418,9 @@ class SpectrasophySimulationModel(object):
                 #     deme2_pop_size = rng.gammavariate(*self.prior_popsize)
                 #     deme2_mu = rng.gammavariate(*self.prior_mutRate)
                 #     deme2_theta = 4 * deme2_pop_size * deme2_mu
-                # params["param.popSize.{}.{}".format(lineage_pair.taxon_label, _ANCESTOR_DEME_LABEL)] = deme2_pop_size
-                # params["param.mutRate.{}.{}".format(lineage_pair.taxon_label, _ANCESTOR_DEME_LABEL)] = deme2_mu
-                # params["param.theta.{}.{}".format(lineage_pair.taxon_label, _ANCESTOR_DEME_LABEL)] = deme2_theta
+                # params["param.popSize.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_pop_size
+                # params["param.mutRate.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_mu
+                # params["param.theta.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_theta
 
                 ## population parameters --- theta parameterization
                 deme0_theta = rng.gammavariate(*self.prior_theta)
@@ -436,9 +436,9 @@ class SpectrasophySimulationModel(object):
                     deme2_theta = rng.gammavariate(*self.prior_ancestral_theta)
                 else:
                     deme2_theta = rng.gammavariate(*self.prior_theta)
-                params["param.theta.{}.{}".format(lineage_pair.taxon_label, _DEME0_LABEL)] = deme0_theta
-                params["param.theta.{}.{}".format(lineage_pair.taxon_label, _DEME1_LABEL)] = deme1_theta
-                params["param.theta.{}.{}".format(lineage_pair.taxon_label, _ANCESTOR_DEME_LABEL)] = deme2_theta
+                params["param.theta.{}.{}".format(lineage_pair.label, _DEME0_LABEL)] = deme0_theta
+                params["param.theta.{}.{}".format(lineage_pair.label, _DEME1_LABEL)] = deme1_theta
+                params["param.theta.{}.{}".format(lineage_pair.label, _ANCESTOR_DEME_LABEL)] = deme2_theta
 
                 for locus_id, locus_definition in enumerate(lineage_pair.locus_definitions):
                     # Fastsimecoal2 separates pop size and mutation rate, but
@@ -777,7 +777,7 @@ class SimulationWorker(multiprocessing.Process):
                 self.fsc2_handler.run(
                         field_name_prefix="{}.{}.{}".format(
                                 self.stat_label_prefix,
-                                lineage_pair.taxon_label,
+                                lineage_pair.label,
                                 locus_definition.locus_label),
                         fsc2_config_d=fsc2_run_configurations[locus_definition],
                         random_seed=self.rng.randint(1, 1E6),
@@ -816,7 +816,7 @@ class SpectrasophySimulator(object):
             self.run_logger.info("{} lineage pairs in analysis:".format(self.model.num_lineage_pairs))
             for lineage_pair_idx, lineage_pair in enumerate(self.model.lineage_pairs):
                 self.run_logger.info("  - '{}': {:>2d} loci (Samples: {})".format(
-                        lineage_pair.taxon_label,
+                        lineage_pair.label,
                         len(lineage_pair.locus_definitions),
                         ", ".join("{}/{}".format(locus.num_genes_deme0, locus.num_genes_deme1) for locus in lineage_pair.locus_definitions),
                         ))

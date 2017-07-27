@@ -151,7 +151,7 @@ def parse_legacy_configuration(filepath, config_d=None):
             ("numtauclasses", float),
             ])
     sample_table_keys = [
-            ("taxon_label", str),
+            ("sister_pair_label", str),
             ("locus_label", str),
             ("ploidy_factor", float),
             ("mutation_rate_factor", float),
