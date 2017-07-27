@@ -13,7 +13,7 @@ class FileInfo(object):
     def __init__(self, filepath):
         self.filepath = filepath
         self.fieldnames = None
-        self.data_row_idx_ranges = {}
+        self.data_row_idx_range = {}
 
 class SpectrasophyNormalizer(object):
 
@@ -58,7 +58,7 @@ class SpectrasophyNormalizer(object):
                     self.fields[field_name].append(row[field_name])
             self.current_data_row_idx += 1
         file_data_row_end = self.current_data_row_idx
-        file_info.data_row_idx_ranges = (file_data_row_start, file_data_row_end)
+        file_info.data_row_idx_range = (file_data_row_start, file_data_row_end)
 
     def read_files(self, filepaths):
         for file_idx, filepath in enumerate(filepaths):
@@ -76,13 +76,24 @@ class SpectrasophyNormalizer(object):
                 continue
             for vidx, v in enumerate(self.fields[field_name]):
                 if v is not None:
-                    self.fields[field_name] = (v - min_value)/normalization_factor
+                    self.fields[field_name][vidx] = (v - min_value)/normalization_factor
 
     def write_results(self):
         for file_idx, file_info in enumerate(self.file_infos):
             output_filepath = self.compose_output_path_f(file_info.filepath, file_idx)
             self.run_logger.info("Writing file {} of {}: '{}'".format(file_idx+1, len(self.file_infos), output_filepath))
-
+            with utility.universal_open(output_filepath, "w") as dest:
+                writer = utility.get_csv_writer(dest=dest,
+                        fieldnames=file_info.fieldnames,
+                        delimiter=self.field_delimiter,
+                        restval=self.missing_data_value,
+                        )
+                writer.writeheader()
+                for data_row_idx in range(*file_info.data_row_idx_range):
+                    row = {}
+                    for field_name in file_info.fieldnames:
+                        row[field_name] = self.fields[field_name][data_row_idx]
+                    writer.writerow(row)
 
     def process_files(self, filepaths):
         self.run_logger.info("Reading data ...")

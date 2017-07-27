@@ -99,13 +99,14 @@ def get_csv_writer(
         dest,
         fieldnames=None,
         delimiter="\t",
+        restval="NA",
         ):
     if isinstance(dest, str):
         dest = open_destput_file_for_csv_writer(filepath=dest)
     writer = csv.DictWriter(
             dest,
             fieldnames=fieldnames,
-            restval="NA",
+            restval=restval,
             delimiter=delimiter,
             lineterminator=os.linesep,
             )
