@@ -390,7 +390,10 @@ class SpectrasophySimulationModel(object):
                     rng=rng,
                     )
         params["param.numDivTimes"] = len(groups)
-        div_time_values = [rng.gammavariate(*self.prior_tau) for i in groups]
+        if self.fixed_divergence_times:
+            div_time_values = [self.fixed_divergence_times[i] for i in range(len(groups))]
+        else:
+            div_time_values = [rng.gammavariate(*self.prior_tau) for i in groups]
         fsc2_run_configurations = collections.OrderedDict()
         div_time_model_desc = [None for i in range(self.num_lineage_pairs)]
 
@@ -407,12 +410,19 @@ class SpectrasophySimulationModel(object):
                 params["param.divTime.{}".format(lineage_pair.label)] = div_time
 
                 ## population parameters --- theta parameterization
-                deme0_theta = rng.gammavariate(*self.prior_theta)
-                if self.theta_constraints[1] == self.theta_constraints[0]:
+                if self.fixed_thetas and self.fixed_thetas[0] > 0:
+                    deme0_theta = self.fixed_thetas[0]
+                else:
+                    deme0_theta = rng.gammavariate(*self.prior_theta)
+                if self.fixed_thetas and self.fixed_thetas[1] > 0:
+                    deme1_theta = self.fixed_thetas[1]
+                elif self.theta_constraints[1] == self.theta_constraints[0]:
                     deme1_theta = deme0_theta
                 else:
                     deme1_theta = rng.gammavariate(*self.prior_theta)
-                if self.theta_constraints[2] == self.theta_constraints[0]:
+                if self.fixed_thetas and self.fixed_thetas[2] > 0:
+                    deme2_theta = self.fixed_thetas[2]
+                elif self.theta_constraints[2] == self.theta_constraints[0]:
                     deme2_theta = deme0_theta
                 elif self.theta_constraints[2] == self.theta_constraints[1]:
                     deme2_theta = deme1_theta
