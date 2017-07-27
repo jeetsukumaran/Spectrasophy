@@ -573,7 +573,7 @@ class Fsc2Handler(object):
             config = FSC2_CONFIG_TEMPLATE.format(**fsc2_config_d)
             dest.write(config)
 
-    def _parse_deme_derived_allele_frequencies(self,
+    def _parse_deme_site_frequencies(self,
             filepath,
             field_name_prefix,
             results_d):
@@ -590,7 +590,7 @@ class Fsc2Handler(object):
                 results_d["{}.{}".format(field_name_prefix, key)] = float(val)
         return results_d
 
-    def _parse_joint_derived_allele_frequencies(self,
+    def _parse_joint_site_frequencies(self,
             filepath,
             field_name_prefix,
             results_d):
@@ -610,16 +610,16 @@ class Fsc2Handler(object):
 
     def _harvest_run_results(self, field_name_prefix, results_d):
         if self.is_calculate_single_population_sfs:
-            self._parse_deme_derived_allele_frequencies(
+            self._parse_deme_site_frequencies(
                     filepath=self.deme0_site_frequency_filepath,
                     field_name_prefix="{}.{}.sfs".format(field_name_prefix, compose_deme_label(0)),
                     results_d=results_d)
-            self._parse_deme_derived_allele_frequencies(
+            self._parse_deme_site_frequencies(
                     filepath=self.deme1_site_frequency_filepath,
                     field_name_prefix="{}.{}.sfs".format(field_name_prefix, compose_deme_label(1)),
                     results_d=results_d)
         if self.is_calculate_joint_population_sfs:
-            self._parse_joint_derived_allele_frequencies(
+            self._parse_joint_site_frequencies(
                     filepath=self.joint_site_frequency_filepath,
                     field_name_prefix="{}.joint.sfs".format(field_name_prefix),
                     results_d=results_d)

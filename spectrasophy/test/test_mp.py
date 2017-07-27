@@ -18,7 +18,6 @@ class MpArchitectureTests(unittest.TestCase):
 
     def test_workers_used(self):
         config_d = {
-                "name": "test",
                 "standard_error_logging_level": "warning",
                 "log_to_file": False,
                 "params": {
