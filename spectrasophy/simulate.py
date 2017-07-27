@@ -908,7 +908,7 @@ class SpectrasophySimulator(object):
                     run_logger=self.run_logger,
                     logging_frequency=self.logging_frequency,
                     messenger_lock=messenger_lock,
-                    random_seed=self.rng.randint(1, sys.maxint),
+                    random_seed=self.rng.randint(1, sys.maxsize),
                     is_calculate_single_population_sfs=self.is_calculate_single_population_sfs,
                     is_calculate_joint_population_sfs=self.is_calculate_joint_population_sfs,
                     is_unfolded_site_frequency_spectrum=self.is_unfolded_site_frequency_spectrum,

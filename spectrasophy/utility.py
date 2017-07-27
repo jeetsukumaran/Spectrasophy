@@ -59,6 +59,7 @@ def pre_py34_open(file,
         newline=None,
         closefd=True,
         opener=None):
+    original_open = open
     if encoding is not None:
         raise NotImplementedError
     if errors is not None:
@@ -72,17 +73,20 @@ def pre_py34_open(file,
         raise NotImplementedError
     if opener is not None:
         raise NotImplementedError
-    return open(
+    return original_open(
             file,
             mode=mode,
             buffering=buffering)
+
+if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    open = pre_py34_open
 
 ##############################################################################
 ## CSV File Handling
 
 def open_destput_file_for_csv_writer(filepath, is_append=False):
-    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        open = pre_py34_open
+    # if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+    #     open = pre_py34_open
     if filepath is None or filepath == "-":
         dest = sys.stdout
     elif sys.version_info >= (3,0,0):
@@ -168,8 +172,6 @@ def parse_legacy_configuration(filepath, config_d=None):
     config_d["params"] = {}
     config_d["locus_info"] = []
     section = "preamble"
-    if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        open = pre_py34_open
     src = open(filepath)
     for row_idx, row in enumerate(src):
         row = row.strip()
@@ -400,8 +402,8 @@ class RunLogger(object):
     CRITICAL_MESSAGING_LEVEL = logging.CRITICAL
 
     def __init__(self, **kwargs):
-        if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-            open = pre_py34_open
+        # if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
+        #     open = pre_py34_open
         self.name = kwargs.get("name", "RunLog")
         self._log = logging.getLogger(self.name)
         self._log.setLevel(RunLogger.DEBUG_MESSAGING_LEVEL)
