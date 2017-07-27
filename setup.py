@@ -11,6 +11,7 @@ setup(
     packages=["spectrasophy"],
     scripts=[
         "bin/spectrasophy-simulate.py",
+        "bin/spectrasophy-normalize.py",
         "bin/spectrasophy-reject.py",
         ],
     url="http://pypi.python.org/pypi/spectrasophy/",

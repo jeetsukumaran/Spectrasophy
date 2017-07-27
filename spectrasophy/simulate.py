@@ -557,7 +557,7 @@ class Fsc2Handler(object):
 
     def _generate_parameter_file(self, fsc2_config_d):
         assert self.parameter_filepath
-        with open(os.path.join(self.working_directory, self.parameter_filepath), "w") as dest:
+        with utility.universal_open(os.path.join(self.working_directory, self.parameter_filepath), "w") as dest:
             self._write_parameter_configuration(
                     dest=dest,
                     fsc2_config_d=fsc2_config_d,
@@ -572,7 +572,7 @@ class Fsc2Handler(object):
             field_name_prefix,
             results_d):
         # results_d = collections.OrderedDict()
-        with open(filepath) as src:
+        with utility.universal_open(filepath) as src:
             lines = src.read().split("\n")
             assert len(lines) == 4 and lines[3] == ""
             header_row = lines[1].split("\t")
@@ -589,7 +589,7 @@ class Fsc2Handler(object):
             field_name_prefix,
             results_d):
         # results_d = collections.OrderedDict()
-        with open(filepath) as src:
+        with utility.universal_open(filepath) as src:
             lines = src.read().split("\n")
             col_keys = lines[1].split("\t")[1:]
             for line in lines[2:]:

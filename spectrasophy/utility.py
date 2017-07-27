@@ -79,20 +79,20 @@ def pre_py34_open(file,
             buffering=buffering)
 
 if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    open = pre_py34_open
+    universal_open = pre_py34_open
+else:
+    universal_open = open
 
 ##############################################################################
 ## CSV File Handling
 
 def open_destput_file_for_csv_writer(filepath, is_append=False):
-    # if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    #     open = pre_py34_open
     if filepath is None or filepath == "-":
         dest = sys.stdout
     elif sys.version_info >= (3,0,0):
-        dest = open(filepath, "a" if is_append else "w", newline='')
+        dest = universal_open(filepath, "a" if is_append else "w", newline='')
     else:
-        dest = open(filepath, "ab" if is_append else "wb")
+        dest = universal_open(filepath, "ab" if is_append else "wb")
     return dest
 
 def get_csv_writer(
@@ -174,7 +174,7 @@ def parse_legacy_configuration(filepath, config_d=None):
     config_d["params"] = {}
     config_d["locus_info"] = []
     section = "preamble"
-    src = open(filepath)
+    src = universal_open(filepath)
     for row_idx, row in enumerate(src):
         row = row.strip()
         if not row:
@@ -404,8 +404,6 @@ class RunLogger(object):
     CRITICAL_MESSAGING_LEVEL = logging.CRITICAL
 
     def __init__(self, **kwargs):
-        # if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-        #     open = pre_py34_open
         self.name = kwargs.get("name", "RunLog")
         self._log = logging.getLogger(self.name)
         self._log.setLevel(RunLogger.DEBUG_MESSAGING_LEVEL)
@@ -423,7 +421,7 @@ class RunLogger(object):
             if "log_stream" in kwargs:
                 log_stream = kwargs.get("log_stream")
             else:
-                log_stream = open(kwargs.get("log_path", self.name + ".log"), "w")
+                log_stream = universal_open(kwargs.get("log_path", self.name + ".log"), "w")
             handler2 = logging.StreamHandler(log_stream)
             file_logging_level = self.get_logging_level(kwargs.get(file_logging_level_req))
             handler2.setLevel(file_logging_level)

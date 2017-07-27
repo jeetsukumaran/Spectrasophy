@@ -8,9 +8,6 @@ import argparse
 import collections
 from spectrasophy import utility
 
-if not (sys.version_info.major >= 3 and sys.version_info.minor >= 4):
-    open = utility.pre_py34_open
-
 class SpectrasophyRejector(object):
 
     def __init__(self,
@@ -42,7 +39,7 @@ class SpectrasophyRejector(object):
     def read_simulated_data(self, filepaths):
         for filepath in filepaths:
             self.run_logger.info("Reading simulation file: '{}'".format(filepath))
-            with open(filepath) as src:
+            with utility.universal_open(filepath) as src:
                 reader = csv.DictReader(
                         src,
                         delimiter=self.field_delimiter,
@@ -108,7 +105,7 @@ class SpectrasophyRejector(object):
         return results[:num_to_retain]
 
     def write_posterior(self, target_data_filepath,):
-        with open(target_data_filepath) as src:
+        with utility.universal_open(target_data_filepath) as src:
             reader = csv.DictReader(
                     src,
                     delimiter=self.field_delimiter,
@@ -139,7 +136,7 @@ class SpectrasophyRejector(object):
                     posterior_indexes = self.closest_values_indexes(
                         target_stat_values=target_stat_values,
                         num_to_retain=num_to_retain,)
-                dest = open(os.path.splitext(os.path.basename(target_data_filepath))[0] + ".posterior.{}.tsv".format(row_idx+1), "w")
+                dest = utility.universal_open(os.path.splitext(os.path.basename(target_data_filepath))[0] + ".posterior.{}.tsv".format(row_idx+1), "w")
                 dest.write(self.field_delimiter.join(str(v) for v in self.other_fieldnames))
                 if self.is_output_summary_stats:
                     dest.write(self.field_delimiter.join(str(v) for v in self.stat_fieldnames))
