@@ -149,6 +149,8 @@ def parse_legacy_configuration(filepath, config_d=None):
             ("migrationshape", float),
             ("migrationscale", float),
             ("numtauclasses", float),
+            ("fixedtaus", str),
+            ("fixedthetas", str),
             ])
     sample_table_keys = [
             ("sister_pair_label", str),

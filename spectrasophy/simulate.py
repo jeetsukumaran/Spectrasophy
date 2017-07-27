@@ -205,7 +205,7 @@ class LineagePair(object):
 class SpectrasophySimulationModel(object):
 
     def __init__(self, params_d, locus_info,):
-        self.configure_loci(locus_info)
+        self.configure_loci(locus_info) # do this first, so we know the number of sister pairs and loci before working on params
         self.configure_params(params_d)
 
     def configure_loci(self, locus_info):
@@ -328,9 +328,38 @@ class SpectrasophySimulationModel(object):
         # simulation-based power analyses, but should not be used for empirical
         # analyses.
         self.num_tau_classes = int(params_d.pop("numTauClasses"))
+        # Special param for simulation/testing: fixed tau to a set of
+        # particular values. Either '0' (ignored) or a comma-separated list of
+        # values. For each potential cluster (= number of species pairs if
+        # 'numTauClasses' is not specified or 0, or 'numTauClasses' otherwise),
+        # there needs to be a divergence time given. These times will be used
+        # in order (e.g., the first cluster of species pairs will get the first
+        # divergence time, the second the next, etc.).
+        fixed_divergence_times_str = params_d.pop("fixedTaus", "")
+        if fixed_divergence_times_str and fixed_divergence_times_str != "0":
+            fdt = [float(i.strip()) for i in fixed_divergence_times_str.split(",")]
+            if len(fdt) != self.num_lineage_pairs and self.num_tau_classes > 0 and len(fdt) != self.num_tau_classes:
+                raise ValueError("Expecting {} values for 'fixedTaus' entry but only found {}".format(self.num_lineage_pairs, len(fdt)))
+            self.fixed_divergence_times = fdt
+        else:
+            self.fixed_divergence_times = None
+        # Special param for simulation/testing: fixed theta to a particular
+        # value. Either '0' (ignore) or a three comma-separate values.
+        # Values are for deme0, deme1, and ancestral deme, respectively.
+        # Any value of '0' will be ignored (allowed to vary according to
+        # conditions specified previously, e.g., 'thetaParameters', 'theta', or
+        # 'ancestralTheta'.
+        fixed_thetas_str = params_d.pop("fixedThetas", "")
+        if fixed_thetas_str and fixed_thetas_str != "0":
+            fdt = [float(i.strip()) for i in fixed_thetas_str.split(",")]
+            if len(fdt) != 3:
+                raise ValueError("Expecting 3 values for 'fixedThetas' entry but only found {}".format(len(fdt)))
+            self.fixed_thetas = fdt
+        else:
+            self.fixed_thetas = None
         # Done!
         if params_d:
-            raise Exception("Unrecognized parameter configuration entries: {}".format(params_d))
+            raise ValueError("Unrecognized parameter configuration entries: {}".format(params_d))
 
     def _get_num_lineage_pairs(self):
         return len(self.lineage_pairs)
