@@ -268,6 +268,22 @@ class TemporaryDirectory(object):
             self.cleanup()
 
 ##############################################################################
+## Output Name Handling
+
+def output_prefix(
+        primary_source_filepath,
+        output_name_prefix=None,
+        output_directory=None,):
+    path_parts = []
+    if output_directory is not None:
+        path_parts.append(output_directory)
+    if output_name_prefix is None:
+        path_parts.append(os.path.splitext(os.path.basename(primary_source_filepath))[0])
+    else:
+        path_parts.append(output_name_prefix)
+    return os.path.join(*path_parts)
+
+##############################################################################
 ## Process Control/Handling
 
 try:

@@ -18,24 +18,21 @@ def main():
     simulator_options.add_argument("configuration_filepath",
             metavar="CONFIGURATION-FILE",
             help="Path to file defining the simulation model and parameters.")
-    # simulator_options.add_argument("-s", "--site-frequency-spectrum-type",
-    #         choices=["folded", "unfolded"],
-    #         default="folded",
-    #         help="Type of site frequency spectrum to generate, 'folded' or 'unfolded' (default: %(default)s).")
-
     output_options = parser.add_argument_group("Output Options")
-    output_options.add_argument('-o', '--output-prefix',
-        action='store',
-        dest='output_prefix',
-        type=str,
-        default=None,
-        metavar='OUTPUT-FILE-PREFIX',
-        help="Prefix for output files (default: same as simulation name)').")
-    output_options.add_argument('-w', '--working-directory-parent',
-        action='store',
-        type=str,
-        default=None,
-        help="Directory within which to create temporary directories and files.")
+    output_options.add_argument('-o', '--output-name-prefix',
+            action='store',
+            dest='output_name_prefix',
+            type=str,
+            default=None,
+            metavar='NAME-PREFIX',
+            help="Prefix for output filenames (default: same as configuration filename stem).")
+    output_options.add_argument('-O', '--output-directory',
+            action='store',
+            dest='output_directory',
+            type=str,
+            default=None,
+            metavar='DIRECTORY',
+            help="Directory for output files (default: current working directory).")
     output_options.add_argument(
             "-U",
             "--unfolded-site-frequency-spectrum",
@@ -43,28 +40,28 @@ def main():
             action="store_true",
             default=False,
             help="Calculate the unfolded or derived site frequency spectrum."
-                 " Otherwise, defaults to the folded or minor site frequency"
-                 " spectrum."
+            " Otherwise, defaults to the folded or minor site frequency"
+            " spectrum."
             )
     output_options.add_argument(
             "--calculate-single-population-site-frequency-spectrum",
             action="store_true",
             default=False,
             help="Calculate the single (within) population site frequency"
-                 " spectrum in addition to the joint."
+            " spectrum in addition to the joint."
             )
     output_options.add_argument("-l", "--labels",
             action="append",
             help="Addition field/value pairs to add to the output (in format <FIELD-NAME>:value;)")
     output_options.add_argument('--field-delimiter',
-        type=str,
-        default='\t',
-        help="Delimiter string separating fields in output (default: <TAB>').")
+            type=str,
+            default='\t',
+            help="Delimiter string separating fields in output (default: <TAB>').")
     output_options.add_argument('--summary-stats-label-prefix',
-        type=str,
-        default='stat',
-        metavar='PREFIX',
-        help="Prefix for summar statistic field labels (default: '%(default)s').")
+            type=str,
+            default='stat',
+            metavar='PREFIX',
+            help="Prefix for summar statistic field labels (default: '%(default)s').")
     output_options.add_argument( "--include-model-id-field",
             action="store_true",
             default=False,
@@ -102,6 +99,11 @@ def main():
             default="info",
             choices=["debug", "info", "warning", "error", "critical", "none", ],
             help="Message level threshold for screen logs (default: %(default)s).")
+    run_options.add_argument('-w', '--working-directory-parent',
+            action='store',
+            type=str,
+            default=None,
+            help="Directory within which to create temporary directories and files.")
     run_options.add_argument("--no-cleanup",
             action="store_true",
             default=False,
@@ -123,10 +125,10 @@ def main():
     utility.parse_legacy_configuration(
             filepath=args.configuration_filepath,
             config_d=config_d)
-    if args.output_prefix is None:
-        config_d["output_prefix"] = os.path.splitext(os.path.basename(args.configuration_filepath))[0]
-    else:
-        config_d["output_prefix"] = args.output_prefix
+    config_d["output_prefix"] = utility.output_prefix(
+            primary_source_filepath=args.configuration_filepath,
+            output_name_prefix=args.output_name_prefix,
+            output_directory=args.output_directory)
     if args.log_frequency is None:
         config_d["logging_frequency"] = int(args.num_reps/10.0)
     elif args.log_frequency == 0:

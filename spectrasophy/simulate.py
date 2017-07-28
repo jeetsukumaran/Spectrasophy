@@ -840,7 +840,10 @@ class SpectrasophySimulator(object):
         self.logging_frequency = config_d.pop("logging_frequency", 1000)
         if self.is_verbose_setup:
             self.run_logger.info("Running: {}".format(self.package_id))
-            self.run_logger.info("Configuring simulation '{}'".format(self.title))
+            self.run_logger.info("Configuring simulation: '{}'".format(self.title))
+            self.run_logger.info("Output directory: '{}'".format(os.path.dirname(os.path.abspath(self.output_prefix))))
+            self.run_logger.info("Output filename prefix: '{}'".format(os.path.basename(self.output_prefix)))
+            self.run_logger.info("Working directory: '{}'".format(self.working_directory))
         self.fsc2_path = config_d.pop("fsc2_path", "fsc25")
         if self.is_verbose_setup:
             self.run_logger.info("FastSimCoal2 path: '{}'".format(self.fsc2_path))
@@ -850,15 +853,13 @@ class SpectrasophySimulator(object):
             if self.random_seed is None:
                 self.random_seed = random.randint(0, sys.maxsize)
             if self.is_verbose_setup:
-                self.run_logger.info("Initializing with random seed {}".format(self.random_seed))
+                self.run_logger.info("Initializing with random seed: {}".format(self.random_seed))
             self.rng = random.Random(self.random_seed)
         else:
             if "random_seed" in config_d:
                 raise TypeError("Cannot specify both 'rng' and 'random_seed'")
             if self.is_verbose_setup:
                 self.run_logger.info("Using existing random number generator")
-        if self.is_verbose_setup:
-            self.run_logger.info("Working directory: '{}'".format(self.working_directory))
         self.is_debug_mode = config_d.pop("debug_mode", False)
         if self.is_verbose_setup and self.is_debug_mode:
             self.run_logger.info("Running in DEBUG mode")
