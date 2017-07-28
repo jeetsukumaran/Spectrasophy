@@ -46,8 +46,8 @@ class SpectrasophyNormalizer(object):
         file_info.fieldnames = reader.fieldnames
         file_data_row_start = self.current_data_row_idx
         for row_idx, row in enumerate(reader):
-            if self.logging_frequency and row_idx > 0 and row_idx % self.logging_frequency == 0:
-                self.run_logger.info("- Processing row {}".format(row_idx+1))
+            if self.logging_frequency and row_idx > 0 and (row_idx % self.logging_frequency) == 0:
+                self.run_logger.info("- Reading row {}".format(row_idx+1))
             assert len(row) == len(reader.fieldnames)
             for field_idx, field_name in enumerate(row):
                 if field_name not in self.fields:
@@ -91,6 +91,8 @@ class SpectrasophyNormalizer(object):
                         )
                 writer.writeheader()
                 for data_row_idx in range(*file_info.data_row_idx_range):
+                    if self.logging_frequency and data_row_idx > 0 and (data_row_idx % self.logging_frequency) == 0:
+                        self.run_logger.info("- Writing row {}".format(data_row_idx+1))
                     row = {}
                     for field_name in file_info.fieldnames:
                         row[field_name] = self.fields[field_name][data_row_idx]
@@ -131,7 +133,7 @@ def main():
             log_to_stderr=not args.quiet,
             log_to_file=False,
             )
-    compose_output_path_f = lambda x, row_idx: os.path.splitext(os.path.basename(x))[0] + ".normalized.tsv"
+    compose_output_path_f = lambda x, row_idx: os.path.join(os.path.splitext(x)[0] + ".normalized.tsv")
     normalizer = SpectrasophyNormalizer(
             compose_output_path_f=compose_output_path_f,
             run_logger=run_logger,
