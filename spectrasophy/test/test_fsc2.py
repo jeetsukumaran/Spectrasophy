@@ -5,7 +5,7 @@ import re
 import unittest
 import time
 import collections
-from spectrasophy import simulate
+from spectrasophy import fsc2
 from spectrasophy.utility import StringIO
 from spectrasophy.test import TESTS_DATA_DIR
 FSC_DATA_DIR = os.path.join(TESTS_DATA_DIR, "fsc-results")
@@ -13,7 +13,7 @@ FSC_DATA_DIR = os.path.join(TESTS_DATA_DIR, "fsc-results")
 class Fsc2ConfigurationTestCase(unittest.TestCase):
 
     def test_fsc_config(self):
-        fsc_handler = simulate.Fsc2Handler(
+        fsc_handler = fsc2.Fsc2Handler(
                 name="test-one",
                 fsc2_path="fsc25",
                 working_directory=FSC_DATA_DIR,
@@ -37,7 +37,7 @@ class Fsc2ConfigurationTestCase(unittest.TestCase):
                 dest=dest,
                 fsc2_config_d=fsc2_config_d)
         result = [row for row in dest.getvalue().split("\n") if row]
-        # expected = re.sub(r"{[A-Za-z0-9_]+}", "#Test#", simulate.FSC2_CONFIG_TEMPLATE)
+        # expected = re.sub(r"{[A-Za-z0-9_]+}", "#Test#", fsc2.FSC2_CONFIG_TEMPLATE)
         expected = [
             "//Number of population samples (demes)",
             "2",
@@ -69,7 +69,7 @@ class Fsc2ConfigurationTestCase(unittest.TestCase):
 class Fsc2SiteFilepathTestCase(unittest.TestCase):
 
     def get_fsc_handler(self, is_unfolded_site_frequency_spectrum):
-        fsc_handler = simulate.Fsc2Handler(
+        fsc_handler = fsc2.Fsc2Handler(
                 name="test-one",
                 fsc2_path="fsc25",
                 working_directory=FSC_DATA_DIR,
@@ -127,7 +127,7 @@ class Fsc2SiteFilepathTestCase(unittest.TestCase):
 class Fsc2DataExtractionTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.fsc = simulate.Fsc2Handler(
+        self.fsc = fsc2.Fsc2Handler(
                 name="test-one",
                 fsc2_path="fsc25",
                 working_directory=FSC_DATA_DIR,
