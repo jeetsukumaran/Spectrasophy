@@ -29,19 +29,30 @@
 ##
 ##############################################################################
 
+import dendropy
 from spectrasophy import model
 
 class SpectrasophySummaryStatsCalculator(object):
 
     def __init__(self, **kwargs):
-        self.output_prefix = kwargs.pop("output_prefix")
+        self.output_prefix = kwargs.pop("output_prefix", "spectrasophy")
         self.is_unfolded_site_frequency_spectrum = kwargs.pop("is_unfolded_site_frequency_spectrum", False)
         self.is_calculate_single_population_sfs = kwargs.pop("is_calculate_single_population_sfs", False)
         self.is_calculate_joint_population_sfs = kwargs.pop("is_calculate_joint_population_sfs", True)
         self.stat_label_prefix = kwargs.pop("stat_label_prefix", "stat")
         self.supplemental_labels = kwargs.pop("supplemental_labels", None)
-        self.model = model.SpectrasophyModel(
-                params_d=None,
-                locus_info=kwargs.pop("locus_info"),)
-        if config_d:
-            raise Exception("Unrecognized configuration entries: {}".format(config_d))
+        locus_info = kwargs.pop("locus_info", None)
+        if locus_info:
+            self.model = model.SpectrasophyModel(params_d=None, locus_info=locus_info,)
+        else:
+            self.model = None
+        if kwargs:
+            raise Exception("Unrecognized configuration entries: {}".format(kwargs))
+
+    def read_data(self, filepath, datatype, schema):
+        if datatype == "dna":
+            data = dendropy.DnaCharacterMatrix.get(path=filepath, schema=schema)
+        elif datatype == "snp":
+            data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
+        return data
+
