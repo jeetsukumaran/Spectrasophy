@@ -50,6 +50,17 @@ class SiteFrequencySpectrumCalcTestCase(unittest.TestCase):
                 obs_sequences = [s.symbols_as_string() for s in data.sequences()]
                 self.assertEqual(obs_sequences, test_ds.dna[idx])
 
+    def test_read_snps(self):
+        sc = sumstats.SpectrasophySummaryStatsCalculator()
+        for test_ds in _TEST_DATASETS:
+            for idx in range(0, 1):
+                data = sc.read_data(
+                        filepath=test_ds.snps_fasta_filepaths[idx],
+                        datatype="standard",
+                        schema="fasta")
+                obs_sequences = [s.symbols_as_string() for s in data.sequences()]
+                self.assertEqual(obs_sequences, test_ds.snps[idx])
+
 
 if __name__ == "__main__":
     unittest.main()

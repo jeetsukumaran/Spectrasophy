@@ -52,7 +52,7 @@ class SpectrasophySummaryStatsCalculator(object):
     def read_data(self, filepath, datatype, schema):
         if datatype == "dna":
             data = dendropy.DnaCharacterMatrix.get(path=filepath, schema=schema)
-        elif datatype == "snp":
+        elif datatype == "standard" or datatype == "snp":
             data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
         return data
 
