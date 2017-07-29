@@ -19,7 +19,7 @@ class SfsTestDataSet(object):
         self.snps = []
         self.dna_fasta_filepaths = []
         self.snps_fasta_filepaths = []
-        for idx in range(0, 1):
+        for idx in range(2):
             self.dna.append([])
             src_path = os.path.join(self.dirpath, "{}.data.dna.deme{}.txt".format(self.filename_prefix, idx))
             with utility.universal_open(src_path) as src:
@@ -37,12 +37,12 @@ _TEST_DATASETS = [
         SfsTestDataSet("testdataset01"),
         ]
 
-class SiteFrequencySpectrumCalcTestCase(unittest.TestCase):
+class DataReadingTestCases(unittest.TestCase):
 
     def test_read_dna(self):
         sc = sumstats.SpectrasophySummaryStatsCalculator()
         for test_ds in _TEST_DATASETS:
-            for idx in range(0, 1):
+            for idx in range(2):
                 data = sc.read_data(
                         filepath=test_ds.dna_fasta_filepaths[idx],
                         datatype="dna",
@@ -53,7 +53,7 @@ class SiteFrequencySpectrumCalcTestCase(unittest.TestCase):
     def test_read_snps(self):
         sc = sumstats.SpectrasophySummaryStatsCalculator()
         for test_ds in _TEST_DATASETS:
-            for idx in range(0, 1):
+            for idx in range(2):
                 data = sc.read_data(
                         filepath=test_ds.snps_fasta_filepaths[idx],
                         datatype="standard",
@@ -61,6 +61,23 @@ class SiteFrequencySpectrumCalcTestCase(unittest.TestCase):
                 obs_sequences = [s.symbols_as_string() for s in data.sequences()]
                 self.assertEqual(obs_sequences, test_ds.snps[idx])
 
+class SiteFrequencySpectrumCalcTestCase(unittest.TestCase):
+
+    def test_unfolded_sfs(self):
+        print("ok")
+        sc = sumstats.SpectrasophySummaryStatsCalculator()
+        for test_ds in _TEST_DATASETS:
+            for datatype, source_filepaths in (
+                    ("dna", test_ds.dna_fasta_filepaths,),
+                    ("standard", test_ds.snps_fasta_filepaths),
+                    ):
+                for idx in range(2):
+                    data = sc.read_data(
+                            filepath=source_filepaths[idx],
+                            datatype=datatype,
+                            schema="fasta")
+                    print("> {}: {}: {}".format(datatype, idx, data.folded_site_frequency_spectrum()))
+                    print("--")
 
 if __name__ == "__main__":
     unittest.main()
