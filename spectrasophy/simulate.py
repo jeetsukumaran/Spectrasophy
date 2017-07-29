@@ -263,7 +263,7 @@ class SpectrasophySimulator(object):
         self.is_unfolded_site_frequency_spectrum = config_d.pop("is_unfolded_site_frequency_spectrum", False)
         self.is_calculate_single_population_sfs = config_d.pop("is_calculate_single_population_sfs", False)
         self.is_calculate_joint_population_sfs = config_d.pop("is_calculate_joint_population_sfs", True)
-        self.is_infinite_sites_model = config_d.pop("is_infinite_sites_model", False)
+        self.is_infinite_sites_model = config_d.pop("is_infinite_sites_model", True)
         if not self.is_calculate_single_population_sfs and not self.is_calculate_joint_population_sfs:
             raise ValueError("Neither single-population nor joint site frequency spectrum will be calculated!")
         self.stat_label_prefix = config_d.pop("stat_label_prefix", "stat")

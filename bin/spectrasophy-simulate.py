@@ -43,12 +43,12 @@ def main():
             " Otherwise, defaults to the folded or minor site frequency"
             " spectrum."
             )
-    output_options.add_argument(
-            "--infinite-sites-model",
-            action="store_true",
-            default=False,
-            help="Use infinite sites model instead of finite sites."
-            )
+    # output_options.add_argument(
+    #         "--infinite-sites-model",
+    #         action="store_true",
+    #         default=False,
+    #         help="Use infinite sites model instead of finite sites."
+    #         )
     output_options.add_argument(
             "--calculate-single-population-site-frequency-spectrum",
             action="store_true",
@@ -149,7 +149,7 @@ def main():
     config_d["is_unfolded_site_frequency_spectrum"] = args.unfolded_site_frequency_spectrum
     config_d["is_calculate_single_population_sfs"] = args.calculate_single_population_site_frequency_spectrum
     config_d["is_calculate_joint_population_sfs"] = True
-    config_d["is_infinite_sites_model"] = args.infinite_sites_model
+    config_d["is_infinite_sites_model"] = True # args.infinite_sites_model
     config_d["stat_label_prefix"] = args.summary_stats_label_prefix
     config_d["supplemental_labels"] = utility.parse_fieldname_and_value(args.labels)
     config_d["is_include_model_id_field"] = args.include_model_id_field
