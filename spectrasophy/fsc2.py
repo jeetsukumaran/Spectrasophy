@@ -35,28 +35,29 @@ import os
 from spectrasophy import utility
 
 FSC2_CONFIG_TEMPLATE = """\
-//Number of population samples (demes)
+// Number of population samples (demes)
 2
-//Population effective sizes (number of genes)
+// Population effective sizes (number of genes)
 {d0_population_size}
 {d1_population_size}
-//Sample sizes
+// Sample sizes
 {d0_sample_size}
 {d1_sample_size}
-//Growth rates: negative growth implies population expansion
+// Growth rates: negative growth implies population expansion
 0
 0
-//Number of migration matrices : 0 implies no migration between demes
+// Number of migration matrices : 0 implies no migration between demes
 0
-//historical event: time, source, sink, migrants, new size, new growth rate, migr. matrix 4 historical event
+// Historical event: time, source, sink, migrants, new size, new growth rate, migr. matrix 4 historical event
 1  historical event
 {div_time} 0 1 1 2 0 0
-//Number of independent loci [chromosome]; '0' => same structure for all loci
+// Number of independent loci [chromosome]; '0' => same structure for all loci
 1 0
-//Per chromosome: Number of contiguous linkage Block: a block is a set of contiguous loci
+// Per chromosome: Number of contiguous linkage Block: a block is a set of contiguous loci
 1
-//per Block:data type, number of loci, per generation recombination rate, per generation mutation rate and optional parameters
+// Per Block:data type, number of loci, per generation recombination rate, per generation mutation rate and optional parameters
 DNA {num_sites} {recombination_rate} {mutation_rate} {ti_proportional_bias}
+// Command: {fsc2_command}
 """
 
 class Fsc2RuntimeError(RuntimeError):
@@ -72,6 +73,7 @@ class Fsc2Handler(object):
             is_calculate_single_population_sfs,
             is_calculate_joint_population_sfs,
             is_unfolded_site_frequency_spectrum,
+            is_infinite_sites_model,
             ):
         self.name = name
         self.fsc2_path = fsc2_path
@@ -85,6 +87,8 @@ class Fsc2Handler(object):
             self.fsc2_sfs_generation_command = "-m"
         self.is_calculate_single_population_sfs = is_calculate_single_population_sfs
         self.is_calculate_joint_population_sfs = is_calculate_joint_population_sfs
+        self.is_infinite_sites_model = is_infinite_sites_model
+        self.is_output_dna_as_snp = False
         self._is_file_system_staged = False
         self._num_executions = 0
         self._current_execution_id = None
@@ -139,7 +143,8 @@ class Fsc2Handler(object):
             os.makedirs(self.working_directory)
         self._is_file_system_staged = True
 
-    def _generate_parameter_file(self, fsc2_config_d):
+    def _generate_parameter_file(self,
+            fsc2_config_d,):
         assert self.parameter_filepath
         with utility.universal_open(os.path.join(self.working_directory, self.parameter_filepath), "w") as dest:
             self._write_parameter_configuration(
@@ -210,14 +215,19 @@ class Fsc2Handler(object):
             random_seed,
             results_d,):
         self._setup_for_execution()
-        self._generate_parameter_file(fsc2_config_d)
         cmds = []
         cmds.append(self.fsc2_path)
-        cmds.extend(["-n", "1"]) # number of simulations to perform
-        cmds.extend(["-r", str(random_seed)]) # seed for random number generator (positive integer <= 1E6)
-        cmds.append(self.fsc2_sfs_generation_command)
-        cmds.extend(["-s0", "-x", "-I", ])
         cmds.extend(["-i", self.parameter_filepath])
+        cmds.append(self.fsc2_sfs_generation_command)
+        cmds.extend(["-n", "1"])                # number of simulations to perform
+        cmds.extend(["-r", str(random_seed)])   # seed for random number generator (positive integer <= 1E6)
+        if self.is_infinite_sites_model:
+            cmd.append("-I")                    # -I  --inf               : generates DNA mutations according to an infinite site (IS) mutation model
+        cmds.append("-S")                       # -S  --allsites          : output the whole DNA sequence, incl. monomorphic sites
+        cmds.append("-s0")                      # -s  --dnatosnp 2000     : output DNA as SNP data, and specify maximum no. of SNPs to output (use 0 to output all SNPs). (required to calculate SFS)
+        cmds.append("-x")                       # -x  --noarloutput       : does not generate Arlequin output
+        fsc2_config_d["fsc2_command"] = " ".join(cmds)
+        self._generate_parameter_file(fsc2_config_d)
         p = subprocess.Popen(cmds,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,

@@ -168,8 +168,10 @@ class LineagePair(object):
 class SpectrasophyModel(object):
 
     def __init__(self, params_d, locus_info,):
-        self.configure_loci(locus_info) # do this first, so we know the number of sister pairs and loci before working on params
-        self.configure_params(params_d)
+        if locus_info is not None:
+            self.configure_loci(locus_info) # do this first, so we know the number of sister pairs and loci before working on params
+        if params_d is not None:
+            self.configure_params(params_d)
 
     def configure_loci(self, locus_info):
         self.label_to_lineage_pair_map = {}

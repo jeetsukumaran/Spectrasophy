@@ -64,6 +64,7 @@ class SimulationWorker(multiprocessing.Process):
             is_calculate_single_population_sfs,
             is_calculate_joint_population_sfs,
             is_unfolded_site_frequency_spectrum,
+            is_infinite_sites_model,
             stat_label_prefix,
             is_include_model_id_field,
             supplemental_labels,
@@ -76,7 +77,8 @@ class SimulationWorker(multiprocessing.Process):
                 working_directory=working_directory,
                 is_calculate_single_population_sfs=is_calculate_single_population_sfs,
                 is_calculate_joint_population_sfs=is_calculate_joint_population_sfs,
-                is_unfolded_site_frequency_spectrum=is_unfolded_site_frequency_spectrum)
+                is_unfolded_site_frequency_spectrum=is_unfolded_site_frequency_spectrum,
+                is_infinite_sites_model=is_infinite_sites_model)
         self.model = model
         self.rng = random.Random(random_seed)
         self.work_queue = work_queue
@@ -261,6 +263,7 @@ class SpectrasophySimulator(object):
         self.is_unfolded_site_frequency_spectrum = config_d.pop("is_unfolded_site_frequency_spectrum", False)
         self.is_calculate_single_population_sfs = config_d.pop("is_calculate_single_population_sfs", False)
         self.is_calculate_joint_population_sfs = config_d.pop("is_calculate_joint_population_sfs", True)
+        self.is_infinite_sites_model = config_d.pop("is_infinite_sites_model", False)
         if not self.is_calculate_single_population_sfs and not self.is_calculate_joint_population_sfs:
             raise ValueError("Neither single-population nor joint site frequency spectrum will be calculated!")
         self.stat_label_prefix = config_d.pop("stat_label_prefix", "stat")
@@ -308,6 +311,7 @@ class SpectrasophySimulator(object):
                     is_calculate_single_population_sfs=self.is_calculate_single_population_sfs,
                     is_calculate_joint_population_sfs=self.is_calculate_joint_population_sfs,
                     is_unfolded_site_frequency_spectrum=self.is_unfolded_site_frequency_spectrum,
+                    is_infinite_sites_model=self.is_infinite_sites_model,
                     stat_label_prefix=self.stat_label_prefix,
                     is_include_model_id_field=self.is_include_model_id_field,
                     supplemental_labels=self.supplemental_labels,
