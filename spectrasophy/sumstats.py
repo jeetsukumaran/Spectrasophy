@@ -57,16 +57,50 @@ class SpectrasophySummaryStatsCalculator(object):
             data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
         return data
 
-    def folded_joint_site_frequency_spectrum(self, d0, d1, is_discard_multiple_mutation_site=True):
-        demes = (d0, d1)
+    def write_folded_joint_site_frequency_spectrum(self,
+            results_csv_writer=None,
+            results_store=None,
+            is_write_header=True,
+            ):
+        results_d = collections.OrderedDict()
+        if self.supplemental_labels:
+            for key in self.supplemental_labels:
+                results_d[key] = self.supplemental_labels[key]
+        for lineage_pair_idx, lineage_pair in enumerate(self.model.lineage_pairs):
+            for locus_definition in lineage_pair.locus_definitions:
+                field_name_prefix="{}.{}.{}".format(
+                        self.stat_label_prefix,
+                        lineage_pair.label,
+                        locus_definition.locus_label),
+                data = read_data(
+                        filepath=locus_definition.alignment_filepath,
+                        datatype="standard",
+                        schema="fasta")
+                # self.fsc2_handler.run(
+                #         field_name_prefix="{}.{}.{}".format(
+                #                 self.stat_label_prefix,
+                #                 lineage_pair.label,
+                #                 locus_definition.locus_label),
+                #         fsc2_config_d=fsc2_run_configurations[locus_definition],
+                #         random_seed=self.rng.randint(1, 1E6),
+                #         results_d=results_d,
+                #         )
+        return results_d
+
+
+    def folded_joint_site_frequency_spectrum(self,
+            d0_sequences,
+            d1_sequences,
+            is_discard_multiple_mutation_site=True):
+        deme_sequences = (d0_sequences, d1_sequences)
         # weirdly, FastsimCoal2 puts first deme second axis, i.e. columns,
         # while second deme gets put on rows
-        jsfs = [[0 for i in range(len(d0)+1)] for j in range(len(d1)+1)]
+        jsfs = [[0 for i in range(len(d0_sequences)+1)] for j in range(len(d1_sequences)+1)]
         num_demes = 2
         nsites = None
         deme_site_columns = []
         for deme_idx in range(num_demes):
-            deme_sites = zip(*(s.symbols_as_list() for s in demes[deme_idx].sequences()))
+            deme_sites = zip(*(s.symbols_as_list() for s in deme_sequences[deme_idx]))
             if nsites is None:
                 nsites = len(deme_sites)
             else:

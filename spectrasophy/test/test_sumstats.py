@@ -117,7 +117,7 @@ class TwoPopSfsTests(unittest.TestCase):
                 ):
             for datatype in ("dna", "std"):
                 d0, d1 = self.read_obs_data(test_data_name=test_data_name, datatype=datatype)
-                obs_folded_jsfs = ss.folded_joint_site_frequency_spectrum(d0, d1)
+                obs_folded_jsfs = ss.folded_joint_site_frequency_spectrum(d0.sequences(), d1.sequences())
                 exp_folded_jsfs = self.read_expected_jsfs("{}.jsfs.folded.txt".format(test_data_name))
                 self.assertEqual(obs_folded_jsfs, exp_folded_jsfs)
 
