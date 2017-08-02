@@ -43,6 +43,7 @@ class SpectrasophySummaryStatsCalculator(object):
         self.stat_label_prefix = kwargs.pop("stat_label_prefix", "stat")
         self.supplemental_labels = kwargs.pop("supplemental_labels", None)
         locus_info = kwargs.pop("locus_info", None)
+        params = kwargs.pop("params", None) # ignore
         if locus_info:
             self.model = model.SpectrasophyModel(params_d=None, locus_info=locus_info,)
         else:
@@ -57,7 +58,7 @@ class SpectrasophySummaryStatsCalculator(object):
             data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
         return data
 
-    def write_folded_joint_site_frequency_spectrum(self,
+    def write_summary_stats(self,
             results_csv_writer=None,
             results_store=None,
             is_write_header=True,
@@ -72,10 +73,16 @@ class SpectrasophySummaryStatsCalculator(object):
                         self.stat_label_prefix,
                         lineage_pair.label,
                         locus_definition.locus_label),
-                data = read_data(
+                data = self.read_data(
                         filepath=locus_definition.alignment_filepath,
                         datatype="standard",
                         schema="fasta")
+                sequences = data.sequences()
+                d0_sequences = sequences[locus_definition.num_genes_deme0]
+                d1_sequences = sequences[locus_definition.num_genes_deme1]
+                jsfs = self.folded_joint_site_frequency_spectrum(
+                        d0_sequences=d0_sequences,
+                        d1_sequences=d1_sequences,)
                 # self.fsc2_handler.run(
                 #         field_name_prefix="{}.{}.{}".format(
                 #                 self.stat_label_prefix,

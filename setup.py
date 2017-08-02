@@ -12,6 +12,7 @@ setup(
     scripts=[
         "bin/spectrasophy-simulate.py",
         "bin/spectrasophy-normalize.py",
+        "bin/spectrasophy-sumstats.py",
         "bin/spectrasophy-reject.py",
         ],
     url="http://pypi.python.org/pypi/spectrasophy/",
