@@ -222,7 +222,7 @@ class Fsc2Handler(object):
         cmds.extend(["-n", "1"])                # number of simulations to perform
         cmds.extend(["-r", str(random_seed)])   # seed for random number generator (positive integer <= 1E6)
         if self.is_infinite_sites_model:
-            cmd.append("-I")                    # -I  --inf               : generates DNA mutations according to an infinite site (IS) mutation model
+            cmds.append("-I")                    # -I  --inf               : generates DNA mutations according to an infinite site (IS) mutation model
         cmds.append("-S")                       # -S  --allsites          : output the whole DNA sequence, incl. monomorphic sites
         cmds.append("-s0")                      # -s  --dnatosnp 2000     : output DNA as SNP data, and specify maximum no. of SNPs to output (use 0 to output all SNPs). (required to calculate SFS)
         cmds.append("-x")                       # -x  --noarloutput       : does not generate Arlequin output
