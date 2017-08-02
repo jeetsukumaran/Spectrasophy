@@ -57,7 +57,7 @@ class SpectrasophySummaryStatsCalculator(object):
             data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
         return data
 
-    def folded_joint_site_frequency_spectrum(self, d0, d1):
+    def folded_joint_site_frequency_spectrum(self, d0, d1, is_discard_multiple_mutation_site=True):
         demes = (d0, d1)
         # weirdly, FastsimCoal2 puts first deme second axis, i.e. columns,
         # while second deme gets put on rows
@@ -83,6 +83,9 @@ class SpectrasophySummaryStatsCalculator(object):
                 jsfs[0][0] += 1
                 continue
             majority_allele = pooled_counter.most_common(1)[0][0]
+            del pooled_counter[majority_allele]
+            if is_discard_multiple_mutation_site and len(pooled_counter) > 1:
+                continue
             for deme_idx in range(num_demes):
                 del deme_counters[deme_idx][majority_allele]
             jsfs[sum(deme_counters[1].values())][sum(deme_counters[0].values())] += 1

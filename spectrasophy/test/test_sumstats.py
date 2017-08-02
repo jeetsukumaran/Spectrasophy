@@ -112,6 +112,8 @@ class TwoPopSfsTests(unittest.TestCase):
         ss = sumstats.SpectrasophySummaryStatsCalculator()
         for test_data_name in (
                 "testdataset01",
+                "testdataset02",
+                "testdataset03",
                 ):
             for datatype in ("dna", "std"):
                 d0, d1 = self.read_obs_data(test_data_name=test_data_name, datatype=datatype)
