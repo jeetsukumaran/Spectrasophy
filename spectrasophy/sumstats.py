@@ -58,15 +58,15 @@ class SpectrasophySummaryStatsCalculator(object):
         return data
 
     def folded_joint_site_frequency_spectrum(self, d0, d1):
+        demes = (d0, d1)
         # weirdly, FastsimCoal2 puts first deme second axis, i.e. columns,
         # while second deme gets put on rows
-        demes = (d0, d1)
-        jsfs = [[0 for i in range(len(d1)+1)] for j in range(len(d0)+1)]
+        jsfs = [[0 for i in range(len(d0)+1)] for j in range(len(d1)+1)]
         num_demes = 2
         nsites = None
         deme_site_columns = []
         for deme_idx in range(num_demes):
-            deme_sites = zip(*(s.symbols_as_string() for s in demes[deme_idx].sequences()))
+            deme_sites = zip(*(s.symbols_as_list() for s in demes[deme_idx].sequences()))
             if nsites is None:
                 nsites = len(deme_sites)
             else:
@@ -87,18 +87,3 @@ class SpectrasophySummaryStatsCalculator(object):
                 del deme_counters[deme_idx][majority_allele]
             jsfs[sum(deme_counters[1].values())][sum(deme_counters[0].values())] += 1
         return jsfs
-        # site_columns_list = [zip(*self.sequences())]
-        # num_sites = len(site_columns[0])
-        # for arg in args:
-        #     c = zip(*arg.sequences())
-        #     assert len(c) == num_sites#, "{} != {}".format(len(c), num_sites)
-        #     site_columns_list.append(c)
-
-        # for site_idx in range(num_sites):
-        #     pooled_counter = collections.Counter()
-        #     deme_site_counters = []
-        #     for site_columns in site_columns_list:
-        #         deme_site_counter = collections.Counter(site_columns[site_idx])
-        #         pooled_counter.update(deme_site_counter)
-        #         deme_site_counters.append(deme_site_counter)
-

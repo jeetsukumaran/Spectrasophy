@@ -247,7 +247,7 @@ class SpectrasophySimulator(object):
         if self.rng is None:
             self.random_seed = config_d.pop("random_seed", None)
             if self.random_seed is None:
-                self.random_seed = random.randint(0, sys.maxsize)
+                self.random_seed = random.randint(1, sys.maxsize)
             if self.is_verbose_setup:
                 self.run_logger.info("Initializing with random seed: {}".format(self.random_seed))
             self.rng = random.Random(self.random_seed)
