@@ -50,12 +50,16 @@ class SpectrasophySummaryStatsCalculator(object):
             self.model = None
         if kwargs:
             raise Exception("Unrecognized configuration entries: {}".format(kwargs))
+        self.default_state_alphabet = dendropy.new_standard_state_alphabet("0123456789ACGTU", case_sensitive=False)
 
     def read_data(self, filepath, datatype, schema):
         if datatype == "dna":
             data = dendropy.DnaCharacterMatrix.get(path=filepath, schema=schema)
         elif datatype == "standard" or datatype == "snp":
-            data = dendropy.StandardCharacterMatrix.get(path=filepath, schema=schema)
+            data = dendropy.StandardCharacterMatrix.get(
+                    path=filepath,
+                    schema=schema,
+                    default_state_alphabet=self.default_state_alphabet)
         return data
 
     def write_summary_stats(self,
@@ -78,8 +82,11 @@ class SpectrasophySummaryStatsCalculator(object):
                         datatype="standard",
                         schema="fasta")
                 sequences = data.sequences()
-                d0_sequences = sequences[locus_definition.num_genes_deme0]
-                d1_sequences = sequences[locus_definition.num_genes_deme1]
+                d0_sequences = sequences[:locus_definition.num_genes_deme0]
+                d1_sequences = sequences[locus_definition.num_genes_deme0:]
+                assert len(d0_sequences) == locus_definition.num_genes_deme0
+                assert len(d1_sequences) == locus_definition.num_genes_deme1
+                assert len(sequences) == locus_definition.num_genes_deme0 + locus_definition.num_genes_deme1
                 jsfs = self.folded_joint_site_frequency_spectrum(
                         d0_sequences=d0_sequences,
                         d1_sequences=d1_sequences,)

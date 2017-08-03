@@ -29,6 +29,7 @@
 ##
 ##############################################################################
 
+import os
 import collections
 import random
 from spectrasophy import utility
