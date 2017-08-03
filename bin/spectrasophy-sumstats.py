@@ -86,6 +86,7 @@ def main():
     config_d["is_calculate_joint_population_sfs"] = True
     config_d["stat_label_prefix"] = args.summary_stats_label_prefix
     config_d["supplemental_labels"] = utility.parse_fieldname_and_value(args.labels)
+    config_d["alignment_directory_head"] = os.path.dirname(os.path.abspath(args.configuration_filepath))
 
     sscalc = sumstats.SpectrasophySummaryStatsCalculator(**config_d)
     filepath = config_d["output_prefix"] + ".obs.sumstats.tsv"

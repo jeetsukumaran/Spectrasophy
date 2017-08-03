@@ -29,8 +29,9 @@
 ##
 ##############################################################################
 
-import dendropy
+import os
 import collections
+import dendropy
 from spectrasophy import model
 
 class SpectrasophySummaryStatsCalculator(object):
@@ -42,6 +43,7 @@ class SpectrasophySummaryStatsCalculator(object):
         self.is_calculate_joint_population_sfs = kwargs.pop("is_calculate_joint_population_sfs", True)
         self.stat_label_prefix = kwargs.pop("stat_label_prefix", "stat")
         self.supplemental_labels = kwargs.pop("supplemental_labels", None)
+        self.alignment_directory_head = kwargs.pop("alignment_directory_head", None)
         locus_info = kwargs.pop("locus_info", None)
         params = kwargs.pop("params", None) # ignore
         if locus_info:
@@ -53,6 +55,8 @@ class SpectrasophySummaryStatsCalculator(object):
         self.default_state_alphabet = dendropy.new_standard_state_alphabet("0123456789ACGTU", case_sensitive=False)
 
     def read_data(self, filepath, datatype, schema):
+        if not os.path.isabs(filepath) and self.alignment_directory_head is not None:
+            filepath = os.path.join(self.alignment_directory_head, filepath)
         if datatype == "dna":
             data = dendropy.DnaCharacterMatrix.get(path=filepath, schema=schema)
         elif datatype == "standard" or datatype == "snp":
