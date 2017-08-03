@@ -105,7 +105,7 @@ def main():
         #         delimiter=args.field_delimiter)
         try:
             results = sscalc.write_summary_stats(
-                    results_csv_writer=dest,
+                    dest=dest,
                     results_store=None,
                     is_write_header=is_write_header)
         except Exception as e:

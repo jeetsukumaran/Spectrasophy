@@ -78,7 +78,7 @@ class SpectrasophySummaryStatsCalculator(object):
                 results_d[key] = self.supplemental_labels[key]
         for lineage_pair_idx, lineage_pair in enumerate(self.model.lineage_pairs):
             for locus_definition in lineage_pair.locus_definitions:
-                field_name_prefix="{}.{}.{}".format(
+                field_name_prefix="{}.{}.{}.joint.sfs".format(
                         self.stat_label_prefix,
                         lineage_pair.label,
                         locus_definition.locus_label)
