@@ -87,23 +87,25 @@ def main():
     config_d["stat_label_prefix"] = args.summary_stats_label_prefix
     config_d["supplemental_labels"] = utility.parse_fieldname_and_value(args.labels)
     config_d["alignment_directory_head"] = os.path.dirname(os.path.abspath(args.configuration_filepath))
+    config_d["field_delimiter"] = args.field_delimiter
 
     sscalc = sumstats.SpectrasophySummaryStatsCalculator(**config_d)
     filepath = config_d["output_prefix"] + ".obs.sumstats.tsv"
-    dest = utility.open_destput_file_for_csv_writer(
-            filepath=filepath,
-            is_append=args.append)
+    # dest = utility.open_destput_file_for_csv_writer(
+    #         filepath=filepath,
+    #         is_append=args.append)
+    dest = utility.universal_open(filepath, "w")
     if args.append or args.no_write_header:
         is_write_header = False
     else:
         is_write_header = True
     with dest:
-        writer = utility.get_csv_writer(
-                dest=dest,
-                delimiter=args.field_delimiter)
+        # writer = utility.get_csv_writer(
+        #         dest=dest,
+        #         delimiter=args.field_delimiter)
         try:
             results = sscalc.write_summary_stats(
-                    results_csv_writer=writer,
+                    results_csv_writer=dest,
                     results_store=None,
                     is_write_header=is_write_header)
         except Exception as e:

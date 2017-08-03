@@ -44,6 +44,7 @@ class SpectrasophySummaryStatsCalculator(object):
         self.stat_label_prefix = kwargs.pop("stat_label_prefix", "stat")
         self.supplemental_labels = kwargs.pop("supplemental_labels", None)
         self.alignment_directory_head = kwargs.pop("alignment_directory_head", None)
+        self.field_delimiter = kwargs.pop("field_delimiter", "\t")
         locus_info = kwargs.pop("locus_info", None)
         params = kwargs.pop("params", None) # ignore
         if locus_info:
@@ -80,7 +81,7 @@ class SpectrasophySummaryStatsCalculator(object):
                 field_name_prefix="{}.{}.{}".format(
                         self.stat_label_prefix,
                         lineage_pair.label,
-                        locus_definition.locus_label),
+                        locus_definition.locus_label)
                 data = self.read_data(
                         filepath=locus_definition.alignment_filepath,
                         datatype="standard",
@@ -94,6 +95,15 @@ class SpectrasophySummaryStatsCalculator(object):
                 jsfs = self.folded_joint_site_frequency_spectrum(
                         d0_sequences=d0_sequences,
                         d1_sequences=d1_sequences,)
+                for row_idx in range(len(jsfs)):
+                    for col_idx in range(len(jsfs[row_idx])):
+                        results_d["{}.{}.{}".format(field_name_prefix, row_idx, col_idx)] = float(jsfs[row_idx][col_idx])
+        # results_csv_writer.fieldnames = results_d.keys()
+        if is_write_header:
+            results_csv_writer.write(self.field_delimiter.join(results_d.keys()))
+            results_csv_writer.write("\n")
+        results_csv_writer.write(self.field_delimiter.join("{}".format(v) for v in results_d.values()))
+        results_csv_writer.write("\n")
                 # self.fsc2_handler.run(
                 #         field_name_prefix="{}.{}.{}".format(
                 #                 self.stat_label_prefix,
