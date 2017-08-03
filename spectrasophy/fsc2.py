@@ -180,18 +180,18 @@ class Fsc2Handler(object):
             lines = src.read().split("\n")
             col_keys = lines[1].split("\t")[1:]
             row_idx = 0
-            col_idx = 0
             for line in lines[2:]:
                 if not line:
                     continue
-                row_idx += 1
                 cols = line.split("\t")
                 assert len(cols) - 1 == len(col_keys)
                 row_key = cols[0]
+                col_idx = 0
                 for col_key, val in zip(col_keys, cols[1:]):
-                    col_idx += 1
                     # results_d["{}.{}.{}".format(field_name_prefix, row_key, col_key)] = float(val)
                     results_d["{}.{}.{}".format(field_name_prefix, row_idx, col_idx)] = float(val)
+                    col_idx += 1
+                row_idx += 1
         return results_d
 
     def _harvest_run_results(self, field_name_prefix, results_d):
