@@ -152,6 +152,7 @@ def main():
     config_d["is_infinite_sites_model"] = args.infinite_sites_model
     config_d["stat_label_prefix"] = args.summary_stats_label_prefix
     config_d["supplemental_labels"] = utility.parse_fieldname_and_value(args.labels)
+    config_d["field_delimiter"] = args.field_delimiter
     config_d["is_include_model_id_field"] = args.include_model_id_field
     with utility.TemporaryDirectory(
             prefix="spectrasophy-",
@@ -165,21 +166,22 @@ def main():
                 package_id=package_id,
                 )
         filepath = config_d["output_prefix"] + ".sumstats.tsv"
-        dest = utility.open_destput_file_for_csv_writer(
-                filepath=filepath,
-                is_append=args.append)
+        dest = utility.universal_open(filepath, "a" if args.append else "w")
+        # dest = utility.open_destput_file_for_csv_writer(
+        #         filepath=filepath,
+        #         is_append=args.append)
         if args.append or args.no_write_header:
             is_write_header = False
         else:
             is_write_header = True
         with dest:
-            writer = utility.get_csv_writer(
-                    dest=dest,
-                    delimiter=args.field_delimiter)
+            # writer = utility.get_csv_writer(
+            #         dest=dest,
+            #         delimiter=args.field_delimiter)
             try:
                 results = simulator.execute(
                         nreps=args.num_reps,
-                        results_csv_writer=writer,
+                        dest=dest,
                         results_store=None,
                         is_write_header=is_write_header)
             except Exception as e:

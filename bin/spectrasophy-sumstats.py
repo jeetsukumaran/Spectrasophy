@@ -94,7 +94,7 @@ def main():
     # dest = utility.open_destput_file_for_csv_writer(
     #         filepath=filepath,
     #         is_append=args.append)
-    dest = utility.universal_open(filepath, "w")
+    dest = utility.universal_open(filepath, "a" if args.append else "w")
     if args.append or args.no_write_header:
         is_write_header = False
     else:

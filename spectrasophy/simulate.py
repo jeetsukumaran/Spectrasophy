@@ -268,6 +268,7 @@ class SpectrasophySimulator(object):
             raise ValueError("Neither single-population nor joint site frequency spectrum will be calculated!")
         self.stat_label_prefix = config_d.pop("stat_label_prefix", "stat")
         self.supplemental_labels = config_d.pop("supplemental_labels", None)
+        self.field_delimiter = config_d.pop("field_delimiter", "\t")
         self.is_include_model_id_field = config_d.pop("is_include_model_id_field", False)
         if "params" not in config_d:
             raise ValueError("Missing 'params' entry in configuration")
@@ -281,7 +282,7 @@ class SpectrasophySimulator(object):
 
     def execute(self,
             nreps,
-            results_csv_writer=None,
+            dest=None,
             results_store=None,
             is_write_header=True,
             ):
@@ -335,11 +336,18 @@ class SpectrasophySimulator(object):
                     raise result
                 if results_store is not None:
                     results_store.append(result)
-                if results_csv_writer is not None:
+                if dest is not None:
                     if result_count == 0 and is_write_header:
-                        results_csv_writer.fieldnames = result.keys()
-                        results_csv_writer.writeheader()
-                    results_csv_writer.writerow(result)
+                        dest.write(self.field_delimiter.join(result.keys()))
+                        dest.write("\n")
+                    dest.write(self.field_delimiter.join("{}".format(v) for v in result.values()))
+                    dest.write("\n")
+
+                    # if result_count == 0 and is_write_header:
+                    #     results_csv_writer.fieldnames = result.keys()
+                    #     results_csv_writer.writeheader()
+                    # results_csv_writer.writerow(result)
+
                 # self.run_logger.info("Recovered results from worker process '{}'".format(result.worker_name))
                 result_count += 1
                 # self.info_message("Recovered results from {} of {} worker processes".format(result_count, self.num_processes))

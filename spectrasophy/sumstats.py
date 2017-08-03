@@ -68,7 +68,7 @@ class SpectrasophySummaryStatsCalculator(object):
         return data
 
     def write_summary_stats(self,
-            results_csv_writer=None,
+            dest=None,
             results_store=None,
             is_write_header=True,
             ):
@@ -98,12 +98,12 @@ class SpectrasophySummaryStatsCalculator(object):
                 for row_idx in range(len(jsfs)):
                     for col_idx in range(len(jsfs[row_idx])):
                         results_d["{}.{}.{}".format(field_name_prefix, row_idx, col_idx)] = float(jsfs[row_idx][col_idx])
-        # results_csv_writer.fieldnames = results_d.keys()
+        # dest.fieldnames = results_d.keys()
         if is_write_header:
-            results_csv_writer.write(self.field_delimiter.join(results_d.keys()))
-            results_csv_writer.write("\n")
-        results_csv_writer.write(self.field_delimiter.join("{}".format(v) for v in results_d.values()))
-        results_csv_writer.write("\n")
+            dest.write(self.field_delimiter.join(results_d.keys()))
+            dest.write("\n")
+        dest.write(self.field_delimiter.join("{}".format(v) for v in results_d.values()))
+        dest.write("\n")
                 # self.fsc2_handler.run(
                 #         field_name_prefix="{}.{}.{}".format(
                 #                 self.stat_label_prefix,
