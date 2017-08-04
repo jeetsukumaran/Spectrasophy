@@ -104,7 +104,9 @@ class SpectrasophyRejector(object):
         results.sort(key=lambda x: x[0])
         return results[:num_to_retain]
 
-    def write_posterior(self, target_data_filepath,):
+    def write_posterior(self, output_prefix, target_data_filepath):
+        if output_prefix is None:
+            output_prefix = os.path.splitext(os.path.basename(target_data_filepath))[0]
         with utility.universal_open(target_data_filepath) as src:
             reader = csv.DictReader(
                     src,
@@ -137,7 +139,7 @@ class SpectrasophyRejector(object):
                     posterior_indexes = self.closest_values_indexes(
                         target_stat_values=target_stat_values,
                         num_to_retain=num_to_retain,)
-                dest = utility.universal_open(os.path.splitext(os.path.basename(target_data_filepath))[0] + ".posterior.{}.tsv".format(row_idx+1), "w")
+                dest = utility.universal_open(output_prefix + ".posterior.{}.tsv".format(row_idx+1), "w")
                 dest.write(self.field_delimiter.join(str(v) for v in self.other_fieldnames))
                 if self.is_output_summary_stats:
                     dest.write(self.field_delimiter.join(str(v) for v in self.stat_fieldnames))
@@ -159,22 +161,6 @@ def main():
             "simulations_data_filepaths",
             nargs="+",
             help="Path to samples from the prior data files.")
-    # rejection_criteria = parser.add_mutually_exclusive_group(required=True)
-    # rejection_criteria.add_argument(
-    #         "-n", "--retain-max-num",
-    #         type=int,
-    #         metavar="#",
-    #         help="Retain this number of samples from the prior into the posterior.")
-    # rejection_criteria.add_argument(
-    #         "-p", "--retain-max-proportion",
-    #         type=float,
-    #         metavar="0.##",
-    #         help="Retain this proportion (0 > 'p' > 1.0) of samples from the prior into the posterior.")
-    # rejection_criteria.add_argument(
-    #         "-d", "--retain-max-distance",
-    #         type=float,
-    #         metavar="#.##",
-    #         help="Retain samples this distance or lower from the prior into the posterior.")
     rejection_criteria = parser.add_argument_group("Rejection Criteria")
     rejection_criteria.add_argument(
             "-n", "--max-num",
@@ -203,7 +189,13 @@ def main():
         type=str,
         default="stat",
         help="Prefix identifying summary statistic fields (default: '%(default)s').")
-    output_options = parser.add_argument_group("Run Options")
+    output_options = parser.add_argument_group("Output Options")
+    output_options.add_argument('-o', '--output-prefix',
+            action='store',
+            type=str,
+            default=None,
+            metavar='NAME-PREFIX',
+            help="Prefix for output filename.")
     output_options.add_argument(
             "--output-summary-stats",
             action="store_true",
@@ -243,7 +235,9 @@ def main():
             is_output_summary_stats=args.output_summary_stats,
             )
     rejector.read_simulated_data(args.simulations_data_filepaths)
-    rejector.write_posterior(target_data_filepath=args.target_data_filepath,)
+    rejector.write_posterior(
+            output_prefix=args.output_prefix,
+            target_data_filepath=args.target_data_filepath,)
 
 if __name__ == "__main__":
     main()
