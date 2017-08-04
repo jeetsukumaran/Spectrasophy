@@ -14,6 +14,7 @@ setup(
         "bin/spectrasophy-normalize.py",
         "bin/spectrasophy-sumstats.py",
         "bin/spectrasophy-reject.py",
+        "bin/spectrasophy-summarize.py",
         ],
     url="http://pypi.python.org/pypi/spectrasophy/",
     test_suite = "spectrasophy.test",
