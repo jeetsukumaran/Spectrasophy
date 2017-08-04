@@ -90,7 +90,7 @@ class SpectrasophySummarizer(object):
                         row_results["count"] = category_count
                         if category_idx == 0:
                             dest.write(self.field_delimiter.join(row_results.keys()) + "\n")
-                    dest.write(self.field_delimiter.join("{}".format(v) for v in row_results.values()) + "\n")
+                        dest.write(self.field_delimiter.join("{}".format(v) for v in row_results.values()) + "\n")
 
 def main():
     parser = argparse.ArgumentParser(
