@@ -80,7 +80,7 @@ class SpectrasophySummarizer(object):
                         dest.write(self.field_delimiter.join(row_results.keys()) + "\n")
                     dest.write(self.field_delimiter.join("{}".format(v) for v in row_results.values()) + "\n")
             for param_idx, param_name in enumerate(categorical_params):
-                with utility.universal_open(output_prefix + ".summary.{:02d}.{}.tsv".format(param_idx, param_name), "w") as dest:
+                with utility.universal_open(output_prefix + ".summary.{:02d}.{}.tsv".format(param_idx+1, param_name), "w") as dest:
                     param_counter = categorical_params[param_name]
                     total = float(sum(param_counter.values()))
                     for category_idx, (category_name, category_count) in enumerate(param_counter.most_common()):
