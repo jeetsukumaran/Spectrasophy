@@ -106,7 +106,7 @@ class SpectrasophyRejector(object):
 
     def write_posterior(self, output_prefix, target_data_filepath):
         if output_prefix is None:
-            output_prefix = os.path.splitext(os.path.basename(target_data_filepath))[0]
+            output_prefix = os.path.splitext(os.path.basename(target_data_filepath))[0] + ".posterior"
         with utility.universal_open(target_data_filepath) as src:
             reader = csv.DictReader(
                     src,
@@ -139,7 +139,7 @@ class SpectrasophyRejector(object):
                     posterior_indexes = self.closest_values_indexes(
                         target_stat_values=target_stat_values,
                         num_to_retain=num_to_retain,)
-                dest = utility.universal_open(output_prefix + ".posterior.{}.tsv".format(row_idx+1), "w")
+                dest = utility.universal_open(output_prefix + ".{}.tsv".format(row_idx+1), "w")
                 dest.write(self.field_delimiter.join(str(v) for v in self.other_fieldnames))
                 if self.is_output_summary_stats:
                     dest.write(self.field_delimiter.join(str(v) for v in self.stat_fieldnames))
